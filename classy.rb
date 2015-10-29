@@ -13,6 +13,7 @@ def usage
 end
 
 
+# Recursively inserts a class under its parent
 def recurse_insert_the_tree(tree, item)
   # check if in this layer
   tree.keys.each do |key|
@@ -29,10 +30,10 @@ def recurse_insert_the_tree(tree, item)
     end
   end
   
-  # failure
   return false
 end
 
+# Recursively search for a specific class in the provided tree
 def find_node_named(tree, name)
   # check if in this layer
   tree.keys.each do |key|
@@ -46,11 +47,11 @@ def find_node_named(tree, name)
     return find_node_named(entry[4], name)
   end
   
-  # failure
   return false
 end
 
 
+# Recursively print out the class tree for a given root node
 $tree_print_scopes = {}
 def print_tree(root, indentation = 0, is_last = false)
   if !$tree_print_scopes.key? indentation
@@ -94,6 +95,7 @@ end
 ################
 ## Control start
 
+# Argument processing
 if ARGV.size != 1 && ARGV.size != 2
   usage
   exit
@@ -107,6 +109,7 @@ end
 roots = {}
 children = []
 
+# Read in class declarations from all the files in the target directory
 filenames = Dir.glob("#{target_dir}/**/*.h") + Dir.glob("#{target_dir}/**/*.hpp")
 filenames.each do |filename|
   contents = File.open(filename, 'rb') { |f| f.read }
@@ -127,6 +130,7 @@ filenames.each do |filename|
   end
 end
 
+# Make the classes a tree
 loop do
   children.each do |child|
     if recurse_insert_the_tree(roots, child)
@@ -138,6 +142,7 @@ loop do
   break if children.size == 0
 end
 
+# Print out the hierarchy
 if explicit_root.empty? # no explicit root specified, print everything
   roots.values.each do |root|
     print_tree root
@@ -147,7 +152,7 @@ else # print tree for explicit root
   if result
     print_tree(result)
   else
-    puts "No tree available"
+    puts "No tree available."
   end
 end
 
